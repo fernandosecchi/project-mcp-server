@@ -6,7 +6,6 @@
  *
  * Uso:
  *   npx project-mcp-server setup
- *   npx github:fernandosecchi/project-mcp-server setup
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, readdirSync } from "node:fs"
@@ -17,8 +16,8 @@ import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SKILLS_DIR = join(__dirname, "..", "skills")
-const SERVER_ENTRY = join(__dirname, "index.js")
 const HOME = homedir()
+const PKG_NAME = "project-mcp-server"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -68,6 +67,16 @@ function warn(msg: string): void {
   console.log(`  ⚠ ${msg}`)
 }
 
+// ─── MCP server config builder ──────────────────────────────────────────────
+
+function mcpServerConfig(projectRoot: string) {
+  return {
+    command: "npx",
+    args: ["-y", PKG_NAME],
+    env: { MCP_PROJECT_ROOT: projectRoot }
+  }
+}
+
 // ─── Agent Detection ─────────────────────────────────────────────────────────
 
 interface AgentConfig {
@@ -76,7 +85,7 @@ interface AgentConfig {
   configPath: string
   skillsDir?: string
   detected: boolean
-  writeConfig: (projectRoot: string, serverPath: string) => void
+  writeConfig: (projectRoot: string) => void
   copySkills?: () => number
 }
 
@@ -88,15 +97,11 @@ function detectAgents(): AgentConfig[] {
       configPath: join(HOME, ".claude", "config.json"),
       skillsDir: join(HOME, ".claude", "skills"),
       detected: existsSync(join(HOME, ".claude")),
-      writeConfig(projectRoot, serverPath) {
+      writeConfig(projectRoot) {
         const configPath = join(HOME, ".claude", "config.json")
         const config = readJson(configPath)
         const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = {
-          command: "node",
-          args: [serverPath],
-          env: { MCP_PROJECT_ROOT: projectRoot }
-        }
+        servers.project = mcpServerConfig(projectRoot)
         config.mcpServers = servers
         writeJson(configPath, config)
       }
@@ -106,16 +111,11 @@ function detectAgents(): AgentConfig[] {
       name: "Open Code",
       configPath: join(HOME, ".config", "opencode", "config.json"),
       detected: existsSync(join(HOME, ".config", "opencode")),
-      writeConfig(projectRoot, serverPath) {
+      writeConfig(projectRoot) {
         const configPath = join(HOME, ".config", "opencode", "config.json")
         const config = readJson(configPath)
         const mcp = (config.mcp ?? {}) as Record<string, unknown>
-        mcp.project = {
-          type: "local",
-          command: "node",
-          args: [serverPath],
-          env: { MCP_PROJECT_ROOT: projectRoot }
-        }
+        mcp.project = { type: "local", ...mcpServerConfig(projectRoot) }
         config.mcp = mcp
         writeJson(configPath, config)
       }
@@ -125,15 +125,11 @@ function detectAgents(): AgentConfig[] {
       name: "Gemini CLI",
       configPath: join(HOME, ".gemini", "config.json"),
       detected: existsSync(join(HOME, ".gemini")),
-      writeConfig(projectRoot, serverPath) {
+      writeConfig(projectRoot) {
         const configPath = join(HOME, ".gemini", "config.json")
         const config = readJson(configPath)
         const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = {
-          command: "node",
-          args: [serverPath],
-          env: { MCP_PROJECT_ROOT: projectRoot }
-        }
+        servers.project = mcpServerConfig(projectRoot)
         config.mcpServers = servers
         writeJson(configPath, config)
       }
@@ -143,15 +139,11 @@ function detectAgents(): AgentConfig[] {
       name: "Codex CLI",
       configPath: join(HOME, ".codex", "config.json"),
       detected: existsSync(join(HOME, ".codex")),
-      writeConfig(projectRoot, serverPath) {
+      writeConfig(projectRoot) {
         const configPath = join(HOME, ".codex", "config.json")
         const config = readJson(configPath)
         const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = {
-          command: "node",
-          args: [serverPath],
-          env: { MCP_PROJECT_ROOT: projectRoot }
-        }
+        servers.project = mcpServerConfig(projectRoot)
         config.mcpServers = servers
         writeJson(configPath, config)
       }
@@ -161,22 +153,17 @@ function detectAgents(): AgentConfig[] {
       name: "Cursor",
       configPath: join(HOME, ".cursor", "mcp.json"),
       detected: existsSync(join(HOME, ".cursor")),
-      writeConfig(projectRoot, serverPath) {
+      writeConfig(projectRoot) {
         const configPath = join(HOME, ".cursor", "mcp.json")
         const config = readJson(configPath)
         const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = {
-          command: "node",
-          args: [serverPath],
-          env: { MCP_PROJECT_ROOT: projectRoot }
-        }
+        servers.project = mcpServerConfig(projectRoot)
         config.mcpServers = servers
         writeJson(configPath, config)
       }
     }
   ]
 
-  // Add copySkills for agents that support it
   for (const agent of agents) {
     if (agent.skillsDir) {
       agent.copySkills = () => copySkillsTo(agent.skillsDir!)
@@ -201,7 +188,7 @@ function copySkillsTo(targetDir: string): number {
 
 // ─── VS Code (per-project) ──────────────────────────────────────────────────
 
-function setupVsCode(projectRoot: string, serverPath: string): void {
+function setupVsCode(projectRoot: string): void {
   const vscodeDir = join(projectRoot, ".vscode")
   const mcpPath = join(vscodeDir, "mcp.json")
   ensureDir(vscodeDir)
@@ -210,8 +197,8 @@ function setupVsCode(projectRoot: string, serverPath: string): void {
   const servers = (config.servers ?? {}) as Record<string, unknown>
   servers.project = {
     type: "stdio",
-    command: "node",
-    args: [serverPath],
+    command: "npx",
+    args: ["-y", PKG_NAME],
     env: { MCP_PROJECT_ROOT: "${workspaceFolder}" }
   }
   config.servers = servers
@@ -280,7 +267,7 @@ async function main(): Promise<void> {
   }
 
   for (const agent of toConfig) {
-    agent.writeConfig(projectRoot, SERVER_ENTRY)
+    agent.writeConfig(projectRoot)
     success(`${agent.name} configurado → ${agent.configPath}`)
   }
 
@@ -291,7 +278,7 @@ async function main(): Promise<void> {
   if (hasVsCode) {
     const setupVsc = await confirm("¿Configurar VS Code (GitHub Copilot) para este proyecto?")
     if (setupVsc) {
-      setupVsCode(projectRoot, SERVER_ENTRY)
+      setupVsCode(projectRoot)
       success(`VS Code configurado → ${join(projectRoot, ".vscode", "mcp.json")}`)
     }
   }
@@ -315,6 +302,9 @@ async function main(): Promise<void> {
   // 6. Resumen
   console.log("  ──────────────────────────")
   console.log("  Setup completado.")
+  console.log()
+  log("Los agentes usarán: npx -y project-mcp-server")
+  log("Esto siempre resuelve la última versión del paquete.")
   console.log()
   log("Para verificar, abrí tu agente en el proyecto y ejecutá:")
   log("  Claude Code → /mcp → debe aparecer 'project' con 10 tools")

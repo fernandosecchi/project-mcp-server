@@ -63,8 +63,8 @@ Editá `~/.claude/config.json`:
 {
   "mcpServers": {
     "project": {
-      "command": "node",
-      "args": ["~/.project-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "project-mcp-server"],
       "env": {
         "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
       }
@@ -84,8 +84,8 @@ Editá `~/.config/opencode/config.json`:
   "mcp": {
     "project": {
       "type": "local",
-      "command": "node",
-      "args": ["~/.project-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "project-mcp-server"],
       "env": {
         "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
       }
@@ -102,8 +102,8 @@ Editá `~/.gemini/config.json`:
 {
   "mcpServers": {
     "project": {
-      "command": "node",
-      "args": ["~/.project-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "project-mcp-server"],
       "env": {
         "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
       }
@@ -120,8 +120,8 @@ Editá `~/.codex/config.json`:
 {
   "mcpServers": {
     "project": {
-      "command": "node",
-      "args": ["~/.project-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "project-mcp-server"],
       "env": {
         "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
       }
@@ -155,8 +155,8 @@ Settings → MCP → Add server:
   "servers": {
     "project": {
       "type": "stdio",
-      "command": "node",
-      "args": ["~/.project-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "project-mcp-server"],
       "env": {
         "MCP_PROJECT_ROOT": "${workspaceFolder}"
       }

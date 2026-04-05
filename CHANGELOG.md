@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.1.0] - 2026-04-05
+
+### Fixed
+- Setup ahora configura MCP con `npx -y project-mcp-server` en vez de path absoluto al cache de npx
+- Esto garantiza que el MCP siempre resuelva la última versión del paquete
+
+### Changed
+- CLI unificado: `npx project-mcp-server setup` (setup) y `npx project-mcp-server` (server)
+- Nuevo entry point `src/cli.ts` que rutea por argumento
+- Configs de agentes en README actualizadas a usar `npx`
+
 ## [2.0.0] - 2026-04-05
 
 ### Added
