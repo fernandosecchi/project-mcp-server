@@ -1,7 +1,7 @@
 {
   "name": "project-mcp-server",
-  "version": "2.2.1",
-  "description": "MCP server con inteligencia de proyecto, control de entorno y generación de código para Next.js + Prisma",
+  "version": "3.0.0",
+  "description": "MCP server con inteligencia de proyecto para Next.js + Prisma. Setup interactivo con OpenSpec, Engram, Skills comunitarios y Guardian Angel.",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -11,7 +11,7 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
-    "setup": "node dist/setup.js",
+    "setup": "node dist/setup/index.js",
     "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
   },
   "repository": {
@@ -26,6 +26,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.24.0"
+  },
+  "optionalDependencies": {
+    "@inquirer/prompts": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

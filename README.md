@@ -6,28 +6,59 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io)
 
-MCP server con inteligencia de proyecto para Next.js + Prisma. Un comando desde tu proyecto:
+MCP server con inteligencia de proyecto para Next.js + Prisma. Un comando para instalar todo:
 
 ```bash
 cd tu-proyecto
 npx project-mcp-server setup
 ```
 
-Crea un `.mcp.json` en tu proyecto y copia las skills. Commiteá el `.mcp.json` al repo para que todo el equipo lo tenga sin configurar nada. **Prerequisito**: Node.js 20+.
+Un wizard interactivo te guía para elegir qué componentes instalar. **Prerequisito**: Node.js 20+.
 
 ---
 
 ## Qué es
 
-Tres capas de inteligencia para tu agente de IA:
+Un instalador unificado que combina inteligencia de proyecto con herramientas del ecosistema AI:
 
-- **Inteligencia del proyecto** — escanea rutas, Server Actions, modelos Prisma y componentes en tiempo real
-- **Control del entorno** — verifica Docker, migraciones y ejecuta type-check/lint/test/build
-- **Generación con convenciones propias** — genera código que lee tu schema de Prisma real
+- **MCP Server** — 10 herramientas de inteligencia de proyecto, entorno y generación de código
+- **OpenSpec** — Desarrollo guiado por especificaciones (SDD)
+- **Engram** — Memoria persistente entre sesiones de IA
+- **Skills comunitarios** — Habilidades para React, Next, Angular, TypeScript y más
+- **Guardian Angel** — Revisión de código con IA antes de cada commit
 
-Sin bases de datos, sin servicios externos. Solo Node.js.
+Sin bases de datos, sin servicios externos. Solo Node.js y un setup interactivo.
 
-Se integra con [Gentleman AI Ecosystem](https://github.com/Gentleman-Programming/gentle-ai) (Engram + SDD + Skills) para memoria persistente y workflow de desarrollo.
+---
+
+## Setup interactivo
+
+```bash
+npx project-mcp-server setup
+```
+
+El wizard detecta tu proyecto y te presenta los componentes disponibles:
+
+```
+Selecciona los componentes a instalar:
+◉ MCP Server         — 10 herramientas de inteligencia de proyecto, entorno y generacion
+◯ OpenSpec           — Desarrollo guiado por especificaciones (SDD)
+◯ Engram             — Memoria persistente entre sesiones de IA
+◯ Skills comunitarios — Habilidades para React, Next, Angular, TypeScript y mas
+◯ Guardian Angel     — Revision de codigo con IA antes de cada commit
+```
+
+Cada componente se instala y configura automáticamente. Si uno falla, los demás continúan.
+
+### Qué hace cada componente
+
+| Componente | Qué instala |
+|---|---|
+| **MCP Server** | Crea `.mcp.json` en tu proyecto + copia skills propios |
+| **OpenSpec** | Ejecuta `openspec init` → genera skills SDD en `.claude/skills/` |
+| **Engram** | Descarga el binario, lo instala en `~/.local/bin/`, configura MCP |
+| **Skills comunitarios** | Descarga skills de [Gentleman-Skills](https://github.com/Gentleman-Programming/Gentleman-Skills) → los copia al agente |
+| **Guardian Angel** | Instala GGA + pre-commit hook para code review con IA |
 
 ---
 
@@ -49,7 +80,18 @@ El setup crea un archivo `.mcp.json` en la raíz de tu proyecto:
 
 Este archivo es **per-project**: cualquier agente MCP-compatible (Claude Code, Cursor, VS Code, etc.) lo detecta automáticamente al abrir el directorio. Commitealo al repo para que todo el equipo lo tenga sin configurar nada.
 
-También copia las skills al directorio del agente (ej: `~/.claude/skills/`).
+Si seleccionás Engram, también se agrega al `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "project": { "..." : "..." },
+    "engram": {
+      "command": "engram",
+      "args": ["mcp", "--tools=agent"]
+    }
+  }
+}
 ```
 
 ---
@@ -83,34 +125,37 @@ También copia las skills al directorio del agente (ej: `~/.claude/skills/`).
 
 ---
 
-## Integración con Gentleman AI Ecosystem
+## Componentes integrados
 
-Este MCP está diseñado para funcionar junto con [Engram](https://github.com/Gentleman-Programming/engram) (memoria persistente) y el [orquestador SDD](https://github.com/Gentleman-Programming/gentle-ai) (workflow de desarrollo).
+### OpenSpec — Spec-Driven Development
 
-### Cómo funciona
+[OpenSpec](https://github.com/Fission-AI/OpenSpec) organiza el desarrollo en propuestas, especificaciones, diseños y tareas antes de escribir código. Se integra con 20+ asistentes de IA.
 
-Engram se encarga de la **memoria** (decisiones, bugs, patrones, contexto entre sesiones). Este MCP se encarga de la **inteligencia del proyecto** (escaneo real del código, generación basada en el schema).
+Al seleccionarlo en el setup, se ejecuta `openspec init` que genera skills y comandos en tu proyecto (`.claude/skills/`, `.claude/commands/opsx/`).
 
-El skill `project-intelligence.SKILL.md` (incluido en `skills/`) le indica al orquestador SDD cuándo usar cada tool:
+### Engram — Memoria persistente
 
-| Fase SDD | Tools del MCP |
-|----------|---------------|
-| `sdd-explore` | `project_scan` — mapa completo del proyecto |
-| `sdd-spec` / `sdd-design` | `project_models`, `project_routes`, `project_actions` |
-| `sdd-apply` | `generate_action`, `generate_page`, `generate_component` |
-| `sdd-verify` | `env_run_check`, `env_prisma_status` |
-| `sdd-archive` | `env_status` — confirmar entorno sano |
+[Engram](https://github.com/Gentleman-Programming/engram) almacena observaciones, sesiones y aprendizajes en SQLite con búsqueda full-text. Se expone como servidor MCP con 11 tools (mem_save, mem_search, mem_context, etc.).
 
-### Setup con Gentleman
+El setup descarga el binario para tu plataforma y lo configura como MCP server en tu proyecto.
 
-1. Instalar [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) (`brew install gentleman-programming/tap/gentle-ai`)
-2. `npx project-mcp-server setup` — configura el MCP y copia las skills automáticamente
+### Skills comunitarios
+
+[Gentleman-Skills](https://github.com/Gentleman-Programming/Gentleman-Skills) es una colección comunitaria de skills para agentes de IA. Incluye 15+ skills curados (React 19, Next.js 15, Angular, TypeScript, Tailwind, Playwright, etc.) y 6+ comunitarios.
+
+El setup los descarga y copia al directorio de skills de tu agente.
+
+### Guardian Angel — Code review con IA
+
+[Guardian Angel](https://github.com/Gentleman-Programming/gentleman-guardian-angel) es un pre-commit hook que valida tu código contra estándares definidos en un `AGENTS.md`. Soporta múltiples proveedores de IA (Claude, Gemini, OpenAI, Ollama).
+
+El setup instala el binario, crea la configuración y opcionalmente instala el pre-commit hook.
 
 ---
 
 ## Workflow sugerido
 
-### Sin Gentleman (standalone)
+### Standalone (solo MCP Server)
 
 ```
 1. env_status()
@@ -126,21 +171,22 @@ El skill `project-intelligence.SKILL.md` (incluido en `skills/`) le indica al or
    → código base generado con TU schema Prisma real
 ```
 
-### Con Gentleman (SDD)
+### Con OpenSpec + Engram
 
 ```
 1. Engram: mem_context() → contexto de sesiones anteriores
 2. MCP: project_scan() → mapa del proyecto actual
-3. SDD: el orquestador delega fases a sub-agentes
-   → cada sub-agente usa las tools del MCP según el skill project-intelligence
-4. Engram: mem_save() → guardar decisiones y aprendizajes
+3. OpenSpec: /opsx:propose → proponer un cambio con specs
+4. OpenSpec: /opsx:apply → implementar las tareas
+5. MCP: env_run_check(check: "typecheck") → verificar
+6. Engram: mem_save() → guardar decisiones y aprendizajes
 ```
 
 ---
 
-## Skills incluidas (10)
+## Skills incluidos (10)
 
-El directorio `skills/` incluye skills en formato Gentleman (YAML frontmatter):
+El directorio `skills/` incluye skills propios del proyecto:
 
 | Skill | Stack |
 |---|---|
@@ -155,7 +201,7 @@ El directorio `skills/` incluye skills en formato Gentleman (YAML frontmatter):
 | `commit.md` | Conventional Commits y PRs |
 | `project-intelligence.SKILL.md` | Integración SDD |
 
-El setup las copia automáticamente al directorio de skills de tu agente.
+El setup los copia automáticamente al directorio de skills de tu agente.
 
 ---
 
@@ -165,8 +211,19 @@ El setup las copia automáticamente al directorio de skills de tu agente.
 project-mcp-server/
 ├── src/
 │   ├── index.ts                    ← entry point (MCP server)
-│   ├── setup.ts                    ← setup interactivo
+│   ├── cli.ts                      ← CLI: setup o server
 │   ├── config.ts                   ← configuración desde env vars
+│   ├── setup/
+│   │   ├── index.ts                ← wizard interactivo (orquestador)
+│   │   ├── types.ts                ← tipos compartidos
+│   │   ├── helpers.ts              ← utilidades (I/O, download, platform)
+│   │   ├── ui.ts                   ← banner, selector, resumen
+│   │   └── installers/
+│   │       ├── mcp-server.ts       ← config .mcp.json
+│   │       ├── openspec.ts         ← OpenSpec init
+│   │       ├── engram.ts           ← descarga + config Engram
+│   │       ├── gentleman-skills.ts ← descarga skills comunitarios
+│   │       └── guardian-angel.ts   ← instala GGA + hook
 │   ├── scanner/
 │   │   ├── cache.ts                ← TTL cache para escaneos
 │   │   ├── routes.ts               ← App Router scanner
@@ -177,21 +234,11 @@ project-mcp-server/
 │       ├── project/index.ts        ← 4 tools de inteligencia
 │       ├── env/index.ts            ← 3 tools de entorno
 │       └── generate/index.ts       ← 3 tools de generación
-├── skills/                         ← archivos .md de skills (formato Gentleman)
-├── dist/                           ← compilado (no commitear)
+├── skills/                         ← 10 archivos .md de skills
+├── dist/                           ← compilado
 ├── package.json
 └── tsconfig.json
 ```
-
----
-
-## Actualizar
-
-```bash
-cd ~/.project-mcp && git pull && npm install && npm run build
-```
-
-No hay que reiniciar el LLM — el servidor se actualiza al próximo restart del proceso MCP.
 
 ---
 
@@ -217,10 +264,10 @@ echo '{
 
 ## Créditos
 
-- [Gentleman Programming](https://github.com/Gentleman-Programming) (Alan Buscaglia) — Engram, Gentle AI, SDD, formato de skills y la filosofía de ecosistema que inspira este proyecto
+- [Gentleman Programming](https://github.com/Gentleman-Programming) (Alan Buscaglia) — Engram, Guardian Angel, Gentleman Skills, y la filosofía de ecosistema que inspira este proyecto
+- [Fission AI](https://github.com/Fission-AI) — OpenSpec, sistema de spec-driven development
 - [Anthropic](https://github.com/modelcontextprotocol) — Model Context Protocol y SDK
 - [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) (Affaan M) — Inspiración para el skill de seguridad
-- [Vercel](https://github.com/vercel/next.js), [Prisma](https://github.com/prisma/prisma), [shadcn](https://github.com/shadcn-ui/ui), [Zod](https://github.com/colinhacks/zod), [NextAuth.js](https://github.com/nextauthjs/next-auth), [Vitest](https://github.com/vitest-dev/vitest), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)
 
 Ver [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md) para el detalle completo.
 

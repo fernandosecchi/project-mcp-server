@@ -6,12 +6,16 @@ Este proyecto existe gracias al trabajo de muchas personas y comunidades open so
 
 Agradecimiento especial a [Alan Buscaglia](https://github.com/Gentleman-Programming) y la comunidad de Gentleman Programming por:
 
-- **[Engram](https://github.com/Gentleman-Programming/engram)** — Sistema de memoria persistente para agentes de IA
-- **[Gentle AI](https://github.com/Gentleman-Programming/gentle-ai)** — Ecosistema de configuración y orquestación SDD
-- **[Gentleman Skills](https://github.com/Gentleman-Programming/gentleman-skills)** — Formato de skills y colección curada
-- **[OpenSpec](https://openspec.dev)** — Especificación para desarrollo guiado por especificaciones
+- **[Engram](https://github.com/Gentleman-Programming/engram)** — Sistema de memoria persistente para agentes de IA. Integrado en el setup como componente descargable.
+- **[Gentleman Skills](https://github.com/Gentleman-Programming/Gentleman-Skills)** — Colección comunitaria de skills para agentes de IA. Los skills curados y comunitarios se descargan e instalan desde el setup.
+- **[Guardian Angel](https://github.com/Gentleman-Programming/gentleman-guardian-angel)** — Code review con IA como pre-commit hook. Integrado en el setup como componente instalable.
+- **[Gentle AI](https://github.com/Gentleman-Programming/gentle-ai)** — Ecosistema de configuración y orquestación para agentes de IA. Inspiración directa para el enfoque de instalador unificado de este proyecto.
 
-El formato de skills de este proyecto es compatible con el ecosistema Gentleman, y la integración SDD fue diseñada para complementar su orquestador.
+El formato de skills de este proyecto es compatible con el ecosistema Gentleman.
+
+## Fission AI
+
+- **[OpenSpec](https://github.com/Fission-AI/OpenSpec)** — Sistema de spec-driven development para alinear humanos e IA antes de escribir código. Integrado en el setup como componente configurable.
 
 ## Model Context Protocol (MCP)
 
@@ -25,6 +29,7 @@ El formato de skills de este proyecto es compatible con el ecosistema Gentleman,
 | [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) | Anthropic | MIT |
 | [zod](https://github.com/colinhacks/zod) | Colin McDonnell | MIT |
 | [typescript](https://github.com/microsoft/TypeScript) | Microsoft | Apache-2.0 |
+| [@inquirer/prompts](https://github.com/SBoudrias/Inquirer.js) | Simon Boudrias | MIT |
 
 ## Tecnologías para las que este proyecto provee inteligencia
 
