@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify tools count
+        run: |
+          TOOLS=$(echo '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}' | MCP_PROJECT_ROOT=/tmp node dist/index.js 2>/dev/null | python3 -c "import sys,json; print(len(json.load(sys.stdin)['result']['tools']))")
+          echo "Tools registradas: $TOOLS"
+          [ "$TOOLS" = "10" ] || (echo "ERROR: Se esperaban 10 tools, se encontraron $TOOLS" && exit 1)

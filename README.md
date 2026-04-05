@@ -1,5 +1,10 @@
 # project-mcp-server
 
+[![CI](https://github.com/fernandosecchi/project-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/fernandosecchi/project-mcp-server/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
+[![MCP](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io)
+
 MCP server con inteligencia de proyecto para Next.js + Prisma. Dos pasos y listo:
 
 ```bash
