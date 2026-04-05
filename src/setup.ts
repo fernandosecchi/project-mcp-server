@@ -72,7 +72,7 @@ function warn(msg: string): void {
 function createProjectMcpConfig(projectRoot: string): void {
   const mcpPath = join(projectRoot, ".mcp.json")
   const config = readJson(mcpPath)
-  const servers = (config.servers ?? {}) as Record<string, unknown>
+  const servers = (config.mcpServers ?? {}) as Record<string, unknown>
 
   servers.project = {
     command: "npx",
@@ -80,7 +80,7 @@ function createProjectMcpConfig(projectRoot: string): void {
     env: { MCP_PROJECT_ROOT: "." }
   }
 
-  config.servers = servers
+  config.mcpServers = servers
   writeJson(mcpPath, config)
 }
 
@@ -157,7 +157,7 @@ async function main(): Promise<void> {
 
   if (alreadyExists) {
     const existing = readJson(mcpPath)
-    const servers = existing.servers as Record<string, unknown> | undefined
+    const servers = existing.mcpServers as Record<string, unknown> | undefined
     if (servers?.project) {
       const overwrite = await confirm("Ya existe .mcp.json con 'project' configurado. ¿Sobreescribir?", false)
       if (!overwrite) {

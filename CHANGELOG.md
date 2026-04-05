@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.2.1] - 2026-04-05
+
+### Fixed
+- `.mcp.json` usa `mcpServers` como key (no `servers`) — formato correcto para Claude Code
+
 ## [2.2.0] - 2026-04-05
 
 ### Changed

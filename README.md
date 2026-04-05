@@ -37,7 +37,7 @@ El setup crea un archivo `.mcp.json` en la raíz de tu proyecto:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "project": {
       "command": "npx",
       "args": ["-y", "project-mcp-server"],
