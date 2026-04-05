@@ -94,16 +94,13 @@ function detectAgents(): AgentConfig[] {
     {
       id: "claude-code",
       name: "Claude Code",
-      configPath: join(HOME, ".claude", "config.json"),
+      configPath: join(HOME, ".claude", "mcp", "project.json"),
       skillsDir: join(HOME, ".claude", "skills"),
       detected: existsSync(join(HOME, ".claude")),
       writeConfig(projectRoot) {
-        const configPath = join(HOME, ".claude", "config.json")
-        const config = readJson(configPath)
-        const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = mcpServerConfig(projectRoot)
-        config.mcpServers = servers
-        writeJson(configPath, config)
+        const mcpDir = join(HOME, ".claude", "mcp")
+        ensureDir(mcpDir)
+        writeJson(join(mcpDir, "project.json"), mcpServerConfig(projectRoot))
       }
     },
     {

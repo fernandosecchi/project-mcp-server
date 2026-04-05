@@ -1,10 +1,14 @@
 # Changelog
 
+## [2.1.1] - 2026-04-05
+
+### Fixed
+- Claude Code: setup escribe en `~/.claude/mcp/project.json` (formato correcto) en vez de `~/.claude/config.json`
+
 ## [2.1.0] - 2026-04-05
 
 ### Fixed
 - Setup ahora configura MCP con `npx -y project-mcp-server` en vez de path absoluto al cache de npx
-- Esto garantiza que el MCP siempre resuelva la última versión del paquete
 
 ### Changed
 - CLI unificado: `npx project-mcp-server setup` (setup) y `npx project-mcp-server` (server)

@@ -57,18 +57,14 @@ Si preferís configurar a mano en vez de usar el setup:
 
 ### Claude Code
 
-Editá `~/.claude/config.json`:
+Creá `~/.claude/mcp/project.json`:
 
 ```json
 {
-  "mcpServers": {
-    "project": {
-      "command": "npx",
-      "args": ["-y", "project-mcp-server"],
-      "env": {
-        "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-      }
-    }
+  "command": "npx",
+  "args": ["-y", "project-mcp-server"],
+  "env": {
+    "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
   }
 }
 ```
