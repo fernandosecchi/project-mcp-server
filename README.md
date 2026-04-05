@@ -316,6 +316,15 @@ echo '{
 
 ---
 
+## Créditos
+
+- [Gentleman Programming](https://github.com/Gentleman-Programming) (Alan Buscaglia) — Engram, Gentle AI, SDD, formato de skills y la filosofía de ecosistema que inspira este proyecto
+- [Anthropic](https://github.com/modelcontextprotocol) — Model Context Protocol y SDK
+- [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) (Affaan M) — Inspiración para el skill de seguridad
+- [Vercel](https://github.com/vercel/next.js), [Prisma](https://github.com/prisma/prisma), [shadcn](https://github.com/shadcn-ui/ui), [Zod](https://github.com/colinhacks/zod), [NextAuth.js](https://github.com/nextauthjs/next-auth), [Vitest](https://github.com/vitest-dev/vitest), [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)
+
+Ver [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md) para el detalle completo.
+
 ## Licencia
 
-MIT
+MIT — ver [LICENSE](LICENSE)
