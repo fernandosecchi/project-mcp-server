@@ -3,6 +3,7 @@
 ## [2.0.0] - 2026-04-05
 
 ### Added
+- Publicado en npm: `npx project-mcp-server setup`
 - Setup interactivo: detecta agentes, configura MCP y copia skills en un comando
 - Skill `security.md` — checklist OWASP adaptado a Next.js + Prisma
 - Skill `project-intelligence.SKILL.md` — integración con SDD (Gentleman AI)

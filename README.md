@@ -1,25 +1,33 @@
 # project-mcp-server
 
 [![CI](https://github.com/fernandosecchi/project-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/fernandosecchi/project-mcp-server/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/project-mcp-server.svg)](https://www.npmjs.com/package/project-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io)
 
-MCP server con inteligencia de proyecto para Next.js + Prisma. Dos pasos y listo:
+MCP server con inteligencia de proyecto para Next.js + Prisma. Un comando y listo:
 
 ```bash
-# 1. Instalar (una sola vez)
-git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
-cd ~/.project-mcp && npm install && npm run build
-
-# 2. Configurar (desde tu proyecto)
-cd /ruta/a/tu-proyecto
-node ~/.project-mcp/dist/setup.js
+npx project-mcp-server setup
 ```
 
-El setup detecta tus agentes (Claude Code, Cursor, Open Code, Gemini CLI, Codex, VS Code), configura el MCP y copia las skills. **Prerequisito**: Node.js 20+.
+Eso es todo. Detecta tus agentes (Claude Code, Cursor, Open Code, Gemini CLI, Codex, VS Code), configura el MCP y copia las skills. **Prerequisito**: Node.js 20+.
 
-Para actualizar: `cd ~/.project-mcp && git pull && npm install && npm run build`
+### Alternativa: instalación global
+
+```bash
+npm install -g project-mcp-server
+project-mcp-setup    # correr desde tu proyecto
+```
+
+### Alternativa: desde source
+
+```bash
+git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
+cd ~/.project-mcp && npm install && npm run build
+node ~/.project-mcp/dist/setup.js   # desde tu proyecto
+```
 
 ---
 
@@ -209,8 +217,7 @@ El skill `project-intelligence.SKILL.md` (incluido en `skills/`) le indica al or
 ### Setup con Gentleman
 
 1. Instalar [gentle-ai](https://github.com/Gentleman-Programming/gentle-ai) (`brew install gentleman-programming/tap/gentle-ai`)
-2. Instalar este MCP server (ver arriba)
-3. Correr `node ~/.project-mcp/dist/setup.js` — copia las skills automáticamente
+2. `npx project-mcp-server setup` — configura el MCP y copia las skills automáticamente
 
 ---
 
