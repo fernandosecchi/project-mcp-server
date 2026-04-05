@@ -1,67 +1,34 @@
 # project-mcp-server
 
-MCP server con tres capas de inteligencia para desarrollo Next.js + Prisma:
+MCP server con inteligencia de proyecto para Next.js + Prisma. Dos pasos y listo:
+
+```bash
+# 1. Instalar (una sola vez)
+git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
+cd ~/.project-mcp && npm install && npm run build
+
+# 2. Configurar (desde tu proyecto)
+cd /ruta/a/tu-proyecto
+node ~/.project-mcp/dist/setup.js
+```
+
+El setup detecta tus agentes (Claude Code, Cursor, Open Code, Gemini CLI, Codex, VS Code), configura el MCP y copia las skills. **Prerequisito**: Node.js 20+.
+
+Para actualizar: `cd ~/.project-mcp && git pull && npm install && npm run build`
+
+---
+
+## Qué es
+
+Tres capas de inteligencia para tu agente de IA:
 
 - **Inteligencia del proyecto** — escanea rutas, Server Actions, modelos Prisma y componentes en tiempo real
 - **Control del entorno** — verifica Docker, migraciones y ejecuta type-check/lint/test/build
 - **Generación con convenciones propias** — genera código que lee tu schema de Prisma real
 
-Compatible con cualquier LLM que soporte MCP: Claude Code, Open Code, Gemini CLI, Codex CLI, Cursor, VS Code Copilot.
+Sin bases de datos, sin servicios externos. Solo Node.js.
 
 Se integra con [Gentleman AI Ecosystem](https://github.com/Gentleman-Programming/gentle-ai) (Engram + SDD + Skills) para memoria persistente y workflow de desarrollo.
-
----
-
-## Prerequisitos
-
-- Node.js 20+
-
-Eso es todo. Sin bases de datos, sin servicios externos.
-
----
-
-## Instalación rápida (un comando)
-
-```bash
-git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
-cd ~/.project-mcp && npm install && npm run build
-```
-
-Después corré el setup desde tu proyecto:
-
-```bash
-cd /ruta/a/tu-proyecto
-~/.project-mcp/node_modules/.bin/tsx ~/.project-mcp/src/setup.ts
-# o si ya buildeaste:
-node ~/.project-mcp/dist/setup.js
-```
-
-El setup:
-1. Detecta qué agentes de IA tenés instalados
-2. Configura el MCP server en cada uno
-3. Copia las skills (Next.js, Prisma, security, etc.)
-
----
-
-## Instalación para el equipo
-
-Cada desarrollador ejecuta:
-
-```bash
-# 1. Clonar (una sola vez)
-git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
-cd ~/.project-mcp && npm install && npm run build
-
-# 2. Setup (desde el directorio del proyecto)
-cd /ruta/a/tu-proyecto
-node ~/.project-mcp/dist/setup.js
-```
-
-Para actualizar:
-
-```bash
-cd ~/.project-mcp && git pull && npm install && npm run build
-```
 
 ---
 
