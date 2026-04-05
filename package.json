@@ -1,0 +1,33 @@
+{
+  "name": "project-mcp-server",
+  "version": "2.0.0",
+  "description": "MCP server con inteligencia de proyecto, control de entorno y generación de código para Next.js + Prisma",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "project-mcp": "dist/index.js",
+    "project-mcp-setup": "dist/setup.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "setup": "node dist/setup.js",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fernandosecchi/project-mcp-server.git"
+  },
+  "keywords": ["mcp", "claude-code", "nextjs", "prisma", "ai-tools"],
+  "author": "Fernando Secchi",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
+  }
+}
