@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.2.0] - 2026-04-05
+
+### Changed
+- Setup ahora crea `.mcp.json` en la raíz del proyecto (per-project) en vez de configs globales
+- Cualquier agente MCP-compatible detecta el archivo automáticamente al abrir el directorio
+- El equipo solo commitea `.mcp.json` y todos tienen el MCP sin configurar nada
+- Skills se copian al agente (global) porque son del agente, no del proyecto
+
+### Removed
+- Configs globales por agente (ya no se escribe en `~/.claude/mcp/`, `~/.config/opencode/`, etc.)
+
 ## [2.1.1] - 2026-04-05
 
 ### Fixed

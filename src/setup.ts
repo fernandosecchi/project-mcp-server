@@ -2,7 +2,7 @@
 
 /**
  * Setup interactivo para project-mcp-server.
- * Detecta agentes instalados, configura el MCP y copia skills.
+ * Crea .mcp.json en el proyecto y copia skills al agente.
  *
  * Uso:
  *   npx project-mcp-server setup
@@ -67,107 +67,44 @@ function warn(msg: string): void {
   console.log(`  ⚠ ${msg}`)
 }
 
-// ─── MCP server config builder ──────────────────────────────────────────────
+// ─── Per-project .mcp.json ──────────────────────────────────────────────────
 
-function mcpServerConfig(projectRoot: string) {
-  return {
+function createProjectMcpConfig(projectRoot: string): void {
+  const mcpPath = join(projectRoot, ".mcp.json")
+  const config = readJson(mcpPath)
+  const servers = (config.servers ?? {}) as Record<string, unknown>
+
+  servers.project = {
     command: "npx",
     args: ["-y", PKG_NAME],
-    env: { MCP_PROJECT_ROOT: projectRoot }
+    env: { MCP_PROJECT_ROOT: "." }
   }
+
+  config.servers = servers
+  writeJson(mcpPath, config)
 }
 
-// ─── Agent Detection ─────────────────────────────────────────────────────────
+// ─── Skills copy ────────────────────────────────────────────────────────────
 
-interface AgentConfig {
-  id: string
+interface SkillTarget {
   name: string
-  configPath: string
-  skillsDir?: string
+  dir: string
   detected: boolean
-  writeConfig: (projectRoot: string) => void
-  copySkills?: () => number
 }
 
-function detectAgents(): AgentConfig[] {
-  const agents: AgentConfig[] = [
+function detectSkillTargets(): SkillTarget[] {
+  return [
     {
-      id: "claude-code",
       name: "Claude Code",
-      configPath: join(HOME, ".claude", "mcp", "project.json"),
-      skillsDir: join(HOME, ".claude", "skills"),
-      detected: existsSync(join(HOME, ".claude")),
-      writeConfig(projectRoot) {
-        const mcpDir = join(HOME, ".claude", "mcp")
-        ensureDir(mcpDir)
-        writeJson(join(mcpDir, "project.json"), mcpServerConfig(projectRoot))
-      }
+      dir: join(HOME, ".claude", "skills"),
+      detected: existsSync(join(HOME, ".claude"))
     },
     {
-      id: "open-code",
       name: "Open Code",
-      configPath: join(HOME, ".config", "opencode", "config.json"),
-      detected: existsSync(join(HOME, ".config", "opencode")),
-      writeConfig(projectRoot) {
-        const configPath = join(HOME, ".config", "opencode", "config.json")
-        const config = readJson(configPath)
-        const mcp = (config.mcp ?? {}) as Record<string, unknown>
-        mcp.project = { type: "local", ...mcpServerConfig(projectRoot) }
-        config.mcp = mcp
-        writeJson(configPath, config)
-      }
-    },
-    {
-      id: "gemini-cli",
-      name: "Gemini CLI",
-      configPath: join(HOME, ".gemini", "config.json"),
-      detected: existsSync(join(HOME, ".gemini")),
-      writeConfig(projectRoot) {
-        const configPath = join(HOME, ".gemini", "config.json")
-        const config = readJson(configPath)
-        const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = mcpServerConfig(projectRoot)
-        config.mcpServers = servers
-        writeJson(configPath, config)
-      }
-    },
-    {
-      id: "codex-cli",
-      name: "Codex CLI",
-      configPath: join(HOME, ".codex", "config.json"),
-      detected: existsSync(join(HOME, ".codex")),
-      writeConfig(projectRoot) {
-        const configPath = join(HOME, ".codex", "config.json")
-        const config = readJson(configPath)
-        const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = mcpServerConfig(projectRoot)
-        config.mcpServers = servers
-        writeJson(configPath, config)
-      }
-    },
-    {
-      id: "cursor",
-      name: "Cursor",
-      configPath: join(HOME, ".cursor", "mcp.json"),
-      detected: existsSync(join(HOME, ".cursor")),
-      writeConfig(projectRoot) {
-        const configPath = join(HOME, ".cursor", "mcp.json")
-        const config = readJson(configPath)
-        const servers = (config.mcpServers ?? {}) as Record<string, unknown>
-        servers.project = mcpServerConfig(projectRoot)
-        config.mcpServers = servers
-        writeJson(configPath, config)
-      }
+      dir: join(HOME, ".config", "opencode", "skills"),
+      detected: existsSync(join(HOME, ".config", "opencode"))
     }
-  ]
-
-  for (const agent of agents) {
-    if (agent.skillsDir) {
-      agent.copySkills = () => copySkillsTo(agent.skillsDir!)
-    }
-  }
-
-  return agents
+  ].filter(t => t.detected)
 }
 
 function copySkillsTo(targetDir: string): number {
@@ -175,31 +112,10 @@ function copySkillsTo(targetDir: string): number {
   const files = readdirSync(SKILLS_DIR).filter(f => f.endsWith(".md"))
   let count = 0
   for (const file of files) {
-    const src = join(SKILLS_DIR, file)
-    const dest = join(targetDir, file)
-    copyFileSync(src, dest)
+    copyFileSync(join(SKILLS_DIR, file), join(targetDir, file))
     count++
   }
   return count
-}
-
-// ─── VS Code (per-project) ──────────────────────────────────────────────────
-
-function setupVsCode(projectRoot: string): void {
-  const vscodeDir = join(projectRoot, ".vscode")
-  const mcpPath = join(vscodeDir, "mcp.json")
-  ensureDir(vscodeDir)
-
-  const config = readJson(mcpPath)
-  const servers = (config.servers ?? {}) as Record<string, unknown>
-  servers.project = {
-    type: "stdio",
-    command: "npx",
-    args: ["-y", PKG_NAME],
-    env: { MCP_PROJECT_ROOT: "${workspaceFolder}" }
-  }
-  config.servers = servers
-  writeJson(mcpPath, config)
 }
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -235,78 +151,67 @@ async function main(): Promise<void> {
   log(`Proyecto: ${projectRoot}`)
   console.log()
 
-  // 2. Detectar agentes
-  const agents = detectAgents()
-  const detected = agents.filter(a => a.detected)
+  // 2. Crear .mcp.json en el proyecto
+  const mcpPath = join(projectRoot, ".mcp.json")
+  const alreadyExists = existsSync(mcpPath)
 
-  if (detected.length === 0) {
-    warn("No se detectaron agentes de IA instalados.")
-    log("Agentes soportados: Claude Code, Open Code, Gemini CLI, Codex CLI, Cursor")
-    log("Instalá alguno y volvé a correr el setup.")
-    process.exit(0)
+  if (alreadyExists) {
+    const existing = readJson(mcpPath)
+    const servers = existing.servers as Record<string, unknown> | undefined
+    if (servers?.project) {
+      const overwrite = await confirm("Ya existe .mcp.json con 'project' configurado. ¿Sobreescribir?", false)
+      if (!overwrite) {
+        log("Configuración de MCP sin cambios.")
+      } else {
+        createProjectMcpConfig(projectRoot)
+        success(`.mcp.json actualizado`)
+      }
+    } else {
+      createProjectMcpConfig(projectRoot)
+      success(`.mcp.json actualizado — server 'project' agregado`)
+    }
+  } else {
+    createProjectMcpConfig(projectRoot)
+    success(`.mcp.json creado`)
   }
 
-  log("Agentes detectados:")
-  for (const agent of detected) {
-    log(`  → ${agent.name}`)
-  }
+  log("")
+  log("Este archivo es per-project: cualquier agente MCP-compatible")
+  log("lo detecta al abrir este directorio. Commitealo al repo para")
+  log("que todo el equipo lo tenga.")
   console.log()
 
-  // 3. Configurar MCP en cada agente
-  const configureAll = await confirm("¿Configurar el MCP server en todos los agentes detectados?")
-  const toConfig = configureAll ? detected : []
+  // 3. Copiar skills a agentes detectados
+  const targets = detectSkillTargets()
 
-  if (!configureAll) {
-    for (const agent of detected) {
-      const yes = await confirm(`  ¿Configurar ${agent.name}?`, false)
-      if (yes) toConfig.push(agent)
+  if (targets.length > 0) {
+    log("Agentes detectados para copiar skills:")
+    for (const t of targets) {
+      log(`  → ${t.name}`)
     }
-  }
+    console.log()
 
-  for (const agent of toConfig) {
-    agent.writeConfig(projectRoot)
-    success(`${agent.name} configurado → ${agent.configPath}`)
-  }
-
-  // 4. VS Code (per-project)
-  const hasVsCode = existsSync(join(projectRoot, ".vscode")) ||
-                    existsSync("/Applications/Visual Studio Code.app") ||
-                    existsSync(join(HOME, ".vscode"))
-  if (hasVsCode) {
-    const setupVsc = await confirm("¿Configurar VS Code (GitHub Copilot) para este proyecto?")
-    if (setupVsc) {
-      setupVsCode(projectRoot)
-      success(`VS Code configurado → ${join(projectRoot, ".vscode", "mcp.json")}`)
-    }
-  }
-
-  console.log()
-
-  // 5. Copiar skills
-  const agentsWithSkills = toConfig.filter(a => a.copySkills)
-  if (agentsWithSkills.length > 0) {
-    const copyAll = await confirm("¿Copiar skills (Next.js, Prisma, security, etc.) a los agentes configurados?")
+    const copyAll = await confirm("¿Copiar skills (Next.js, Prisma, security, etc.)?")
     if (copyAll) {
-      for (const agent of agentsWithSkills) {
-        const count = agent.copySkills!()
-        success(`${count} skills copiadas a ${agent.skillsDir}`)
+      for (const t of targets) {
+        const count = copySkillsTo(t.dir)
+        success(`${count} skills copiadas a ${t.dir}`)
       }
     }
   }
 
   console.log()
 
-  // 6. Resumen
+  // 4. Resumen
   console.log("  ──────────────────────────")
   console.log("  Setup completado.")
   console.log()
-  log("Los agentes usarán: npx -y project-mcp-server")
-  log("Esto siempre resuelve la última versión del paquete.")
-  console.log()
-  log("Para verificar, abrí tu agente en el proyecto y ejecutá:")
+  log("Archivo creado: .mcp.json (commitear al repo)")
+  log("")
+  log("Para verificar:")
   log("  Claude Code → /mcp → debe aparecer 'project' con 10 tools")
-  log("  Open Code → tab → debe aparecer el MCP server")
-  console.log()
+  log("  Cursor → Settings → MCP → debe aparecer 'project'")
+  log("")
   log("Para usar con Gentleman AI (Engram + SDD):")
   log("  brew install gentleman-programming/tap/gentle-ai")
   log("  Las skills ya están copiadas en formato compatible.")

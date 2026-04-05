@@ -6,28 +6,14 @@
 [![Node.js](https://img.shields.io/badge/Node.js-20%2B-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-purple.svg)](https://modelcontextprotocol.io)
 
-MCP server con inteligencia de proyecto para Next.js + Prisma. Un comando y listo:
+MCP server con inteligencia de proyecto para Next.js + Prisma. Un comando desde tu proyecto:
 
 ```bash
+cd tu-proyecto
 npx project-mcp-server setup
 ```
 
-Eso es todo. Detecta tus agentes (Claude Code, Cursor, Open Code, Gemini CLI, Codex, VS Code), configura el MCP y copia las skills. **Prerequisito**: Node.js 20+.
-
-### Alternativa: instalación global
-
-```bash
-npm install -g project-mcp-server
-project-mcp-setup    # correr desde tu proyecto
-```
-
-### Alternativa: desde source
-
-```bash
-git clone https://github.com/fernandosecchi/project-mcp-server.git ~/.project-mcp
-cd ~/.project-mcp && npm install && npm run build
-node ~/.project-mcp/dist/setup.js   # desde tu proyecto
-```
+Crea un `.mcp.json` en tu proyecto y copia las skills. Commiteá el `.mcp.json` al repo para que todo el equipo lo tenga sin configurar nada. **Prerequisito**: Node.js 20+.
 
 ---
 
@@ -45,120 +31,25 @@ Se integra con [Gentleman AI Ecosystem](https://github.com/Gentleman-Programming
 
 ---
 
-## Configuración manual
+## Cómo funciona
 
-Si preferís configurar a mano en vez de usar el setup:
-
-### Variables de entorno
-
-| Variable | Default | Descripción |
-|---|---|---|
-| `MCP_PROJECT_ROOT` | `process.cwd()` | Raíz del proyecto a analizar |
-
-### Claude Code
-
-Creá `~/.claude/mcp/project.json`:
-
-```json
-{
-  "command": "npx",
-  "args": ["-y", "project-mcp-server"],
-  "env": {
-    "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-  }
-}
-```
-
-Verificar: abrí Claude Code en tu proyecto → `/mcp` → debe aparecer `project` con 10 tools.
-
-### Open Code
-
-Editá `~/.config/opencode/config.json`:
-
-```json
-{
-  "mcp": {
-    "project": {
-      "type": "local",
-      "command": "npx",
-      "args": ["-y", "project-mcp-server"],
-      "env": {
-        "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-      }
-    }
-  }
-}
-```
-
-### Gemini CLI
-
-Editá `~/.gemini/config.json`:
-
-```json
-{
-  "mcpServers": {
-    "project": {
-      "command": "npx",
-      "args": ["-y", "project-mcp-server"],
-      "env": {
-        "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-      }
-    }
-  }
-}
-```
-
-### Codex CLI
-
-Editá `~/.codex/config.json`:
-
-```json
-{
-  "mcpServers": {
-    "project": {
-      "command": "npx",
-      "args": ["-y", "project-mcp-server"],
-      "env": {
-        "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-      }
-    }
-  }
-}
-```
-
-### Cursor
-
-Settings → MCP → Add server:
-
-```json
-{
-  "project": {
-    "command": "node",
-    "args": ["~/.project-mcp/dist/index.js"],
-    "env": {
-      "MCP_PROJECT_ROOT": "/ruta/absoluta/tu-proyecto"
-    }
-  }
-}
-```
-
-### VS Code (GitHub Copilot)
-
-`.vscode/mcp.json` en el workspace:
+El setup crea un archivo `.mcp.json` en la raíz de tu proyecto:
 
 ```json
 {
   "servers": {
     "project": {
-      "type": "stdio",
       "command": "npx",
       "args": ["-y", "project-mcp-server"],
-      "env": {
-        "MCP_PROJECT_ROOT": "${workspaceFolder}"
-      }
+      "env": { "MCP_PROJECT_ROOT": "." }
     }
   }
 }
+```
+
+Este archivo es **per-project**: cualquier agente MCP-compatible (Claude Code, Cursor, VS Code, etc.) lo detecta automáticamente al abrir el directorio. Commitealo al repo para que todo el equipo lo tenga sin configurar nada.
+
+También copia las skills al directorio del agente (ej: `~/.claude/skills/`).
 ```
 
 ---

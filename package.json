@@ -1,6 +1,6 @@
 {
   "name": "project-mcp-server",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "MCP server con inteligencia de proyecto, control de entorno y generación de código para Next.js + Prisma",
   "type": "module",
   "main": "dist/index.js",
